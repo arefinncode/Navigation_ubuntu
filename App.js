@@ -1,18 +1,10 @@
-import React, { Component } from 'react';
-import {
-    Platform,
-    StyleSheet,
-    Text,
-    View,Button,Image
-} from 'react-native';
+import React from 'react';
+import {Platform,StyleSheet,Text,View,Button,Image} from 'react-native';
 
 
-import { createStackNavigator } from 'react-navigation';
-// import DetailsScreen from "./DetailsScreen";
-// import PlaceList from "./src/components/PlaceList/PlaceList";
+import {createStackNavigator} from 'react-navigation';
 
-
-class LogoTitle extends Component {
+class LogoTitle extends React.Component {
     render() {
         return (
             <Image
@@ -22,9 +14,8 @@ class LogoTitle extends Component {
         );
     }
 
-
-
 }
+
 
 
 class HomeScreen extends React.Component {
@@ -32,7 +23,7 @@ class HomeScreen extends React.Component {
         const params = navigation.state.params || {};
 
         return {
-            headerTitle:<LogoTitle/>,
+            headerTitle: <LogoTitle />,
             headerLeft: (
                 <Button
                     onPress={() => navigation.navigate('MyModal')}
@@ -40,31 +31,46 @@ class HomeScreen extends React.Component {
                     color="#fff"
                 />
             ),
-            headerRight:(
-                <Button
-                    title="Go to Details"
-                    onPress={() => {
-                        /* 1. Navigate to the Details route with params */
-                        this.props.navigation.navigate('Details', {
-                            itemId: 86,
-                            otherParam: 'anything you want here',
-                        });
-                    }}
-                />
+            headerRight: (
+                <Button onPress={params.increaseCount} title="+1" color="#fff" />
             ),
-
-            /* the rest of this config is unchanged */
-
-
         };
     };
 
-    /* render function, etc */
+    componentWillMount() {
+        this.props.navigation.setParams({ increaseCount: this._increaseCount });
+    }
+
+    state = {
+        count: 0,
+    };
+
+    _increaseCount = () => {
+        this.setState({ count: this.state.count + 1 });
+    };
+
+    render() {
+        return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Text>Home Screen</Text>
+                <Text>Count: {this.state.count}</Text>
+                <Button
+                    title="Go to Details"
+                    onPress={() => {
+                        //  1. Navigate to the Details route with params
+                        this.props.navigation.navigate('Details', {
+                            itemId: 86,
+                            otherParam: 'First Details',
+                        });
+                    }}
+                />
+            </View>
+        );
+    }
 }
 
 
-
-class ModalScreen extends Component {
+class ModalScreen extends React.Component {
     render() {
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -78,46 +84,18 @@ class ModalScreen extends Component {
     }
 }
 
-// createStackNavigator is a funtion that returns a react component,thus it is a react Component
-// see 1st chapter on  ract-navigation
-
-const MainStack = createStackNavigator(
-    {
-        Home: {
-            screen: HomeScreen,
-        }
-        ,
-        Details: {
-            screen: DetailsScreen,
-        },
-    },
-    {
-        initialRouteName: 'Home',
-        navigationOptions: {
-            headerStyle: {
-                backgroundColor: '#f4511e',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-            },
-            /* Same configuration as before */
-        },
-    }
-
-);
 
 
 
 
 
-const DetailScreen= class DetailsScreen extends Component {
+class DetailsScreen extends React.Component {
     static navigationOptions = ({ navigation, navigationOptions }) => {
         const { params } = navigation.state;
 
         return {
             title: params ? params.otherParam : 'A Nested Details Screen',
-            // These values are used instead of the shared configuration!
+            // These values are used instead of the shared configuration! */
             headerStyle: {
                 backgroundColor: navigationOptions.headerTintColor,
             },
@@ -126,28 +104,16 @@ const DetailScreen= class DetailsScreen extends Component {
     };
 
     render() {
-        // 2. Read the params from the navigation state
+        // 2. Read the params from the navigation state */
         const { params } = this.props.navigation.state;
         const itemId = params ? params.itemId : null;
         const otherParam = params ? params.otherParam : null;
 
         return (
-
-            <View
-                style={
-
-                    {
-                        flex: 1, alignItems: 'center', justifyContent: 'center'
-                    }
-                }>
-
-                <Text>
-                    Details Screen
-                </Text>
-                <Text>itemId: {JSON.stringify(itemId)}
-                </Text>
-                <Text>otherParam: {JSON.stringify(otherParam)}
-                </Text>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Text>Details Screen</Text>
+                <Text>itemId: {JSON.stringify(itemId)}</Text>
+                <Text>otherParam: {JSON.stringify(otherParam)}</Text>
                 <Button
                     title="Update the title"
                     onPress={() =>
@@ -168,6 +134,31 @@ const DetailScreen= class DetailsScreen extends Component {
 
 
 
+const MainStack = createStackNavigator(
+    {
+        Home: {
+            screen: HomeScreen,
+        },
+        Details: {
+            screen: DetailsScreen,
+        },
+    },
+    {
+        initialRouteName: 'Home',
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: '#f4511e',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        },
+    }
+);
+
+
+
 const RootStack = createStackNavigator(
     {
         Main: {
@@ -183,11 +174,8 @@ const RootStack = createStackNavigator(
     }
 );
 
-
-/* this approach gives more control to root element /arefin*/
-export default class App extends Component {
+export default class App extends React.Component {
     render() {
         return <RootStack/>;
     }
 }
-
